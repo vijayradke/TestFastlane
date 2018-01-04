@@ -1,0 +1,52 @@
+min_fastlane_version("2.72.0")
+
+default_platform(:ios)
+
+platform :ios do
+  before_all do
+    # ENV["SLACK_URL"] = "https://hooks.slack.com/services/..."
+    # cocoapods
+    # cocoapods
+  end
+
+  desc "Creating Build"
+  lane :beta do
+    build_app(
+    export_method: "ad-hoc",
+    include_bitcode: true,
+    clean: true,
+    export_options: {
+      provisioningProfiles: { 
+         "com.worldbook.wow": "WorldBook_AdHoc"
+      }
+    },
+    output_directory: "Build-Dir",
+  )
+  end
+
+  desc "Deploy a new version to the App Store"
+  lane :release do
+    # sync_code_signing(type: "appstore")
+    capture_screenshots
+    build_app(scheme: "MVVMSample") # more options available
+    # upload_to_app_store(force: true)
+    frame_screenshots
+  end
+
+  # You can define as many lanes as you want
+
+  after_all do |lane|
+    # This block is called, only if the executed lane was successful
+
+    # slack(
+    #   message: "Successfully deployed new App Update."
+    # )
+  end
+
+  error do |lane, exception|
+    # slack(
+    #   message: exception.message,
+    #   success: false
+    # )
+  end
+end
